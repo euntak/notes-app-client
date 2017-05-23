@@ -6,7 +6,37 @@ import {
     ListGroup,
     ListGroupItem
 } from 'react-bootstrap';
-import './Home.css';
+
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+    .lander {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+    .lander h1 {
+            font-family: "Open Sans", sans-serif;
+            font-weight: 600;
+        }
+
+    .lander p {
+            color: #999;
+        }
+
+    .notes h4 {
+        font-family: "Open Sans", sans-serif;
+        font-weight: 600;
+        overflow: hidden;
+        line-height: 1.5;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        }
+
+    .notes p {
+        color: #666;
+    }
+`;
 
 class Home extends Component {
     constructor(props) {
@@ -19,7 +49,7 @@ class Home extends Component {
     }
 
     async componentDidMount() {
-        if(this.props.userToken === null) {
+        if (this.props.userToken === null) {
             return;
         }
 
@@ -42,19 +72,19 @@ class Home extends Component {
     renderNotesList(notes) {
         return [{}].concat(notes).map((note, i) => (
             i !== 0
-            ? ( <ListGroupItem
+                ? (<ListGroupItem
                     key={note.noteid}
                     href={`/notes/${note.noteid}`}
                     onClick={this.handleNoteClick}
                     header={note.content.trim().split('\n')[0]}>
-                    { "Created: " + (new Date(note.createdAt)).toLocaleString() }
-                </ListGroupItem> )
-            : ( <ListGroupItem
+                    {"Created: " + (new Date(note.createdAt)).toLocaleString()}
+                </ListGroupItem>)
+                : (<ListGroupItem
                     key="new"
                     href="/notes/new"
                     onClick={this.handleNoteClick}>
                     <h4><b>{'\uFF0B'}</b> Create a new note</h4>
-                </ListGroupItem> )
+                </ListGroupItem>)
         ));
     }
 
@@ -62,13 +92,13 @@ class Home extends Component {
         event.preventDefault();
         this.props.history.push(event.currentTarget.getAttribute('href'));
     }
-    
+
     renderLander() {
         return (
-        <div className="lander">
-            <h1>Scratch</h1>
-            <p>A simple note taking app</p>
-        </div>
+            <div className="lander">
+                <h1>Scratch</h1>
+                <p>A simple note taking app</p>
+            </div>
         );
     }
 
@@ -78,7 +108,7 @@ class Home extends Component {
             <div className='notes'>
                 <PageHeader>Your Notes</PageHeader>
                 <ListGroup>
-                    { 
+                    {
                         !this.state.isLoading
                         && this.renderNotesList(this.state.notes)
                     }
@@ -89,13 +119,13 @@ class Home extends Component {
 
     render() {
         return (
-            <div className='Home'>
+            <Wrapper>
                 {
                     this.props.userToken === null
-                    ? this.renderLander()
-                    : this.renderNotes()
+                        ? this.renderLander()
+                        : this.renderNotes()
                 }
-            </div>
+            </Wrapper>
         );
     }
 }

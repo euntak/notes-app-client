@@ -7,8 +7,18 @@ import {
     ControlLabel,
 } from 'react-bootstrap';
 import LoaderButton from '../components/LoaderButton';
-import config from '../config.js';
-import './Notes.css';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+    form {
+        padding-bottom: 15px;
+    }
+
+    form textarea {
+        height: 300px;
+        font-size: 24px;
+    }
+`;
 
 class Notes extends Component {
     constructor(props) {
@@ -63,7 +73,7 @@ class Notes extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
+        if (this.file && this.file.size > process.env.MAX_ATTACHMENT_SIZE) {
             alert('Please pick a file smaller than 5MB');
             return;
         }
@@ -111,7 +121,7 @@ class Notes extends Component {
 
         event.preventDefault();
 
-        if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
+        if (this.file && this.file.size > process.env.MAX_ATTACHMENT_SIZE) {
             alert('Please pick a file smaller than 5MB');
             return;
         }
@@ -139,7 +149,7 @@ class Notes extends Component {
 
     render() {
         return (
-            <div className="Notes">
+            <Wrapper>
                 {this.state.note &&
                     (<form onSubmit={this.handleSubmit}>
                         <FormGroup controlId="content">
@@ -182,7 +192,7 @@ class Notes extends Component {
                             text="Delete"
                             loadingText="Deleting…" />
                     </form>)}
-            </div>
+            </Wrapper>
         );
     }
 }

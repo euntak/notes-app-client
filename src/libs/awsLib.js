@@ -1,10 +1,10 @@
-import config from '../config.js';
 import AWS from 'aws-sdk';
+
+const URL = 'https://97xouxnhli.execute-api.ap-northeast-2.amazonaws.com/prod';
 
 export async function invokeApig(
     { path, method = 'GET', body }, userToken) {
-        const url = `${config.apiGateway.URL}${path}`;
-        
+        const url = `${URL}${path}`;
         const headers = {
             Authorization: userToken,
         };
@@ -25,12 +25,12 @@ export async function invokeApig(
     }
 
 export function getAwsCredntials(userToken) {
-    const authenticator = `cognito-idp.${config.cognito.REGION}.amazonaws.com/${config.cognito.USER_POOL_ID}`;
+    const authenticator = `cognito-idp.${process.env.REACT_APP_REGION}.amazonaws.com/${process.env.REACT_APP_USER_POOL_ID}`;
 
-    AWS.config.update({ region: config.cognito.REGION });
+    AWS.config.update({ region: process.env.REACT_APP_REGION });
 
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: config.cognito.IDENTITY_POOL_ID,
+        IdentityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID,
         Logins: {
             [authenticator]: userToken
         }
@@ -44,7 +44,7 @@ export async function s3Upload(file, userToken) {
 
     const s3 = new AWS.S3({
         params: {
-            Bucket: config.s3.BUCKET,
+            Bucket: process.env.REACT_APP_BUCKET,
         }
     });
 

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import LoaderButton from '../components/LoaderButton';
-import config from '../config.js';
 import {
-  CognitoUserPool,
-  AuthenticationDetails,
-  CognitoUser
+    CognitoUserPool,
+    AuthenticationDetails,
+    CognitoUser
 } from 'amazon-cognito-identity-js';
 
 import {
@@ -14,8 +13,16 @@ import {
     ControlLabel,
 } from 'react-bootstrap';
 
-import './Login.css';
-
+import styled from 'styled-components';
+const Wrapper = styled.div`
+    @media all and (min-width: 480px) {
+        padding: 60px 0;
+        form {
+            margin: 0 auto;
+            max-width: 320px;
+        }
+    }
+`;
 
 class Login extends Component {
     constructor(props) {
@@ -30,8 +37,8 @@ class Login extends Component {
 
     login(username, password) {
         const userPool = new CognitoUserPool({
-            UserPoolId: config.cognito.USER_POOL_ID,
-            ClientId: config.cognito.APP_CLIENT_ID,
+            UserPoolId: process.env.REACT_APP_USER_POOL_ID,
+            ClientId: process.env.REACT_APP_APP_CLIENT_ID,
         });
 
         const authenticationData = {
@@ -78,7 +85,7 @@ class Login extends Component {
 
     render() {
         return (
-            <div className='Login'>
+            <Wrapper>
                 <form onSubmit={this.handleSubmit}>
                     <FormGroup controlId='username' bsSize='large'>
                         <ControlLabel>Email</ControlLabel>
@@ -99,13 +106,13 @@ class Login extends Component {
                     <LoaderButton
                         block
                         bsSize='large'
-                        disabled={ !this.validateForm() }
-                        isLoading={ this.state.isLoading }
+                        disabled={!this.validateForm()}
+                        isLoading={this.state.isLoading}
                         type='submit'
                         text='Login'
                         loadingText='Logging in...' />
                 </form>
-            </div>
+            </Wrapper>
         );
     }
 }

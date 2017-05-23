@@ -12,10 +12,26 @@ import {
   CognitoUserPool,
   CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
-import config from '../config.js';
 
 import LoaderButton from '../components/LoaderButton';
-import './Signup.css';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+    @media all and (min-width: 480px) {
+        padding: 60px 0;
+
+        form {
+            margin: 0 auto;
+            max-width: 320px;
+        }
+    }
+
+    form span.help-block {
+        font-size: 14px;
+        padding-bottom: 10px;
+        color: #999;
+    }
+`;
 
 class Signup extends Component {
     constructor(props) {
@@ -33,8 +49,8 @@ class Signup extends Component {
 
     signup(username, password) {
         const userPool = new CognitoUserPool({
-            UserPoolId: config.cognito.USER_POOL_ID,
-            ClientId: config.cognito.APP_CLIENT_ID
+            UserPoolId: process.env.REACT_APP_USER_POOL_ID,
+            ClientId: process.env.REACT_APP_APP_CLIENT_ID
         });
 
         const attributeEmail = new CognitoUserAttribute({ Name: 'email', Value: username });
@@ -199,12 +215,12 @@ class Signup extends Component {
 
     render() {
         return (
-            <div className='Signup'>
+            <Wrapper>
                 { this.state.newUser === null 
                     ? this.renderForm()
                     : this.renderConfirmationForm()
                 }
-            </div>
+            </Wrapper>
         );
     }
 }

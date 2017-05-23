@@ -3,10 +3,50 @@ import { withRouter, Link } from 'react-router-dom';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import AWS from 'aws-sdk';
-import config from './config.js';
-import Routes from './Routes';
-import RouteNavItem from './components/RouteNavItem';
-import './App.css';
+import Routes from '../Routes';
+import RouteNavItem from '../components/RouteNavItem';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  margin-top: 15px;
+
+  .navbar-brand {
+    font-weight: bold;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    color: #333;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "PT Serif", serif;
+  }
+
+  select.form-control,
+  textarea.form-control,
+  input.form-control {
+    font-size: 16px;
+  }
+  input[type=file] {
+    width: 100%;
+  }
+
+  .spinning.glyphicon {
+    margin-right: 7px;
+    top: 2px;
+    color: #333;
+    animation: spin 1s infinite linear;
+  }
+
+  @keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+  }
+`;
 
 class App extends Component {
   constructor(props) {
@@ -37,10 +77,18 @@ class App extends Component {
   }
 
   getCurrentUser() {
+    // if you config.js using.. below code 
+    // const userPool = new CognitoUserPool({
+    //   UserPoolId: config.cognito.USER_POOL_ID,
+    //   ClientId: config.cognito.APP_CLIENT_ID
+    // });
+
+    // if you're .env using... below code
     const userPool = new CognitoUserPool({
-      UserPoolId: config.cognito.USER_POOL_ID,
-      ClientId: config.cognito.APP_CLIENT_ID
+      UserPoolId: process.env.REACT_APP_USER_POOL_ID,
+      ClientId: process.env.REACT_APP_APP_CLIENT_ID
     });
+
     return userPool.getCurrentUser();
   }
 
@@ -95,7 +143,7 @@ class App extends Component {
     return ! this.state.isLoadingUserToken
     && 
     (
-      <div className="App container">
+      <Wrapper className="container">
         <Navbar fluid collapseOnSelect>
           <Navbar.Header>
             <Navbar.Brand>
@@ -115,7 +163,7 @@ class App extends Component {
           </Navbar.Collapse>
         </Navbar>
         <Routes childProps={childProps} />
-      </div>
+      </Wrapper>
     );
   }
 }

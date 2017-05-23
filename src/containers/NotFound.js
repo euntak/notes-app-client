@@ -1,11 +1,18 @@
 import React from 'react';
-import './NotFound.css';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+    {
+        padding-top: 100px;
+        text-align: center;
+    }
+`;
 
 const NotFound = () => {
     return (
-        <div className='NotFound'>
+        <Wrapper>
             <h3>Sorry, page Not Found!</h3>
-        </div>
+        </Wrapper>
     );
 };
 

@@ -8,8 +8,18 @@ import {
 
 import { invokeApig, s3Upload } from '../libs/awsLib';
 import LoaderButton from '../components/LoaderButton';
-import config from '../config.js';
-import './NewNote.css';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+    form {
+        padding-bottom: 15px;
+    }
+
+    form textarea {
+        height: 300px;
+        font-size: 24px;
+    }
+`;
 
 
 class NewNote extends Component {
@@ -50,7 +60,7 @@ class NewNote extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
 
-        if(this.file && this.file.size > config.MAX_ATTACHEMENT_SIZE) {
+        if(this.file && this.file.size > process.env.MAX_ATTACHEMENT_SIZE) {
             alert('Please pick a file smaller than 5MB');
             return;
         }
@@ -77,7 +87,7 @@ class NewNote extends Component {
 
     render() {
         return (
-            <div className='NewNote'>
+            <Wrapper>
                 <form onSubmit={this.handleSubmit}>
                     <FormGroup controlId='content'>
                         <FormControl
@@ -101,9 +111,9 @@ class NewNote extends Component {
                         type='submit'
                         isLoading={this.state.isLoading}
                         text='Create'
-                        loadingText='Createing...' />
+                        loadingText='Creating...' />
                 </form>
-            </div>
+            </Wrapper>
         );
     }
 }
