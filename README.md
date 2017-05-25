@@ -5,6 +5,11 @@
 
 * create TestCase
 * add redux
+    * ~~Home~~
+    * NewNotes
+    * Notes
+    * Login
+    * Signup
 * using component-styled
 * refactoring
 * client-deploy
