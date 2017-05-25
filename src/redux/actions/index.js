@@ -4,7 +4,6 @@ export const REQUEST_NOTES = 'REQUEST_NOTES';
 export const RECEIVE_NOTES_SUCCESS = 'RECEIVE_NOTES_SUCCESS';
 export const RECEIVE_NOTES_FAILURE = 'RECEIVE_NOTES_FAILURE';
 
-
 export function requestNotes(userToken) {
     return {
         type: REQUEST_NOTES,
