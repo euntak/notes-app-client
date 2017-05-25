@@ -1,28 +1,32 @@
 import AWS from 'aws-sdk';
+import axios from 'axios';
 
 const URL = 'https://97xouxnhli.execute-api.ap-northeast-2.amazonaws.com/prod';
 
 export async function invokeApig(
     { path, method = 'GET', body }, userToken) {
-        const url = `${URL}${path}`;
-        const headers = {
-            Authorization: userToken,
-        };
 
-        body = (body) ? JSON.stringify(body) : body;
+    const config = {
+        method: method,
+        baseURL: URL,
+        url: path,
+        headers: {
+            'Authorization': userToken,
+        },
+        data: (body) ? JSON.stringify(body) : body
+    };
 
-        const results = await fetch(url, {
-            method,
-            body,
-            headers
+    const results = await axios(config)
+        .then(function (response) {
+            console.log(response);
+            return response.data;
+        })
+        .catch(function (error) {
+            throw new Error(error);
         });
 
-        if(results.status !== 200) {
-            throw new Error(await results.text());
-        }
-
-        return results.json();
-    }
+    return results;
+}
 
 export function getAwsCredntials(userToken) {
     const authenticator = `cognito-idp.${process.env.REACT_APP_REGION}.amazonaws.com/${process.env.REACT_APP_USER_POOL_ID}`;

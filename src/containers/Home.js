@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { invokeApig } from '../libs/awsLib';
 import {
     PageHeader,
     ListGroup,
     ListGroupItem
 } from 'react-bootstrap';
-
+import { connect } from 'react-redux';
+import { fetchNotes } from '../redux/actions';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -39,34 +39,26 @@ const Wrapper = styled.div`
 `;
 
 class Home extends Component {
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            isLoading: false,
-            notes: [],
-        };
+    componentDidMount() {
+        if (this.props.userToken === null) return;
+        this.notes();
     }
 
-    async componentDidMount() {
-        if (this.props.userToken === null) {
-            return;
-        }
+    handleNoteClick = (evnet) => {
+        event.preventDefault();
+        this.props.history.push(event.currentTarget.getAttribute('href'));
+    }
 
-        this.setState({ isLoading: true });
+    // async await 으로 notes 리스트를 받아온다.
+    async notes() {
+        const { fetchNotes, userToken } = this.props;
 
         try {
-            const results = await this.notes();
-            this.setState({ notes: results });
+            await fetchNotes(userToken);
         } catch (e) {
-            alert(e);
+            throw new Error(e);
         }
-
-        this.setState({ isLoading: false });
-    }
-
-    notes() {
-        return invokeApig({ path: '/notes' }, this.props.userToken);
     }
 
     renderNotesList(notes) {
@@ -88,11 +80,7 @@ class Home extends Component {
         ));
     }
 
-    handleNoteClick = (evnet) => {
-        event.preventDefault();
-        this.props.history.push(event.currentTarget.getAttribute('href'));
-    }
-
+    // default rendering 
     renderLander() {
         return (
             <div className="lander">
@@ -102,15 +90,16 @@ class Home extends Component {
         );
     }
 
-
-    renderNotes() {
+    // this is rendering method then notes item is exsisting
+    renderNotes(notes) {
+        const { isLoading } = this.props;
         return (
             <div className='notes'>
                 <PageHeader>Your Notes</PageHeader>
                 <ListGroup>
                     {
-                        !this.state.isLoading
-                        && this.renderNotesList(this.state.notes)
+                        !isLoading
+                        && this.renderNotesList(notes)
                     }
                 </ListGroup>
             </div>
@@ -118,16 +107,28 @@ class Home extends Component {
     }
 
     render() {
+        const { userToken, notes } = this.props;
+
         return (
             <Wrapper>
                 {
-                    this.props.userToken === null
-                        ? this.renderLander()
-                        : this.renderNotes()
+                    userToken === null
+                        ? this.renderNotes()
+                        : this.renderNotes(notes)
                 }
             </Wrapper>
         );
     }
 }
+
+Home = connect(
+    (state) => ({
+        notes: state.notes.list,
+        isLoading: state.notes.isLoading,
+    }),
+    (dispatch) => ({
+        fetchNotes: (userToken) => dispatch(fetchNotes(userToken))
+    })
+)(Home);
 
 export default withRouter(Home);

@@ -5,11 +5,18 @@
   "dependencies": {
     "amazon-cognito-identity-js": "^1.17.0",
     "aws-sdk": "^2.54.0",
+    "axios": "^0.16.1",
+    "immutable": "^3.8.1",
     "open-color": "^1.5.1",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",
+    "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.1",
+    "redux": "^3.6.0",
+    "redux-actions": "^2.0.3",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
     "styled-components": "^1.4.6"
   },
   "devDependencies": {
