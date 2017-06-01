@@ -2,7 +2,9 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAILURE,
     LOGING_PENDER,
-    UPDATE_USERTOKEN
+    UPDATE_USERTOKEN,
+    LOGOUT_PENDER,
+    LOGOUT
 } from '../actions/user';
 
 const initialState = {
@@ -38,6 +40,14 @@ export default function user(state = initialState, action) {
                 ...state,
                 userToken: action.userToken,
             }
+        case LOGOUT_PENDER:
+            return {
+                ...state,
+                isLoading: true,
+                userToken: action.userToken,
+            }
+        case LOGOUT:
+            return initialState
         default: 
             return state
     }

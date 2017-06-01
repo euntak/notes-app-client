@@ -31,8 +31,8 @@ class Login extends Component {
     }
 
     validateForm() {
-        return this.state.username.length > 0 
-        && this.state.password.length > 0;
+        return this.state.username.length > 0
+            && this.state.password.length > 0;
     }
 
     handleChange = (event) => {
@@ -43,20 +43,20 @@ class Login extends Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        const { loginUser , history, updateUserToken} = this.props;
+        const { loginUser, history, updateUserToken } = this.props;
         try {
             const result = await loginUser(this.state.username, this.state.password);
-            
-            if(result.type === 'LOGIN_FAILURE') {
+
+            if (result.type === 'LOGIN_FAILURE') {
                 alert('아이디와 비밀번호를 확인해 주세요');
                 return;
             }
 
             // // 결과 값에서 userToken을 빼서 localStorage에 저장 한다.
-            // localStorage.setItem('userToken', result.userToken);
+            localStorage.setItem('userToken', result.userToken);
             updateUserToken(result.userToken);
             history.push('/');
-            
+
         } catch (e) {
             alert(e);
         }

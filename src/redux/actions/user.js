@@ -1,13 +1,12 @@
 import userApi from '../../api/userApi';
 import AWS from 'aws-sdk';
-import { browserHistory } from 'react-router-dom';
 
 export const LOGIN_USER = 'LOGIN_USER';
 export const LOGIN_PENDER = 'LOGING_PENDER';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 
-export const LOGOUT_PENDER = 'LOGING_PENDER';
+export const LOGOUT_PENDER = 'LOGOUT_PENDER';
 export const LOGOUT = 'LOGOUT';
 
 export const UPDATE_USERTOKEN = 'UPDATE_USERTOKEN';
@@ -81,9 +80,10 @@ export function loginUser(username, password) {
     }
 }
 
-export function logoutUser(history) {
-    console.log(history);
-    // const { history , userToken } = this.state;
+export function logoutUser() {
+    // const { history } = this.state;
+    // console.log(history);
+    console.log('hello!');
     return (dispatch) => {
         dispatch(logoutPender());
         const currentUser = userApi.getCurrentUser();
@@ -100,10 +100,9 @@ export function logoutUser(history) {
 
         if(localStorage.getItem('userToken') === null) {
             dispatch(logout());
-            
         }
 
         // this.props.history.push('/result');
-        history.push('/login');
+        // history.push('/login');
     }
 }

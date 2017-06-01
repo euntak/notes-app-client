@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
-// import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { connect } from 'react-redux';
 import UserApi from '../api/userApi';
 import { updateUserToken, logoutUser } from '../redux/actions/user';
-import AWS from 'aws-sdk';
 import Routes from '../Routes';
 import RouteNavItem from '../components/RouteNavItem';
 import styled from 'styled-components';
@@ -61,9 +59,9 @@ class App extends Component {
   //   };
   // }
 
-  componentWillMount() {
-    if(localStorage.getItem('userToken')) localStorage.removeItem('userToken');
-  }
+  // componentWillMount() {
+  //   if(localStorage.getItem('userToken')) localStorage.removeItem('userToken');
+  // }
 
   async componentDidMount() {
     const currentUser = UserApi.getCurrentUser();
@@ -88,19 +86,20 @@ class App extends Component {
   /*
    * clear aws credentials cache ! 
    */
-  handleLogout = (event) => {
+  handleLogout = async (event) => {
+    const { logout, history } = this.props;
     event.preventDefault();
-        
-    // this.props.history.push('/login');
-
+    await logout();
+    history.push('/login');
   }
 
   render() {
-    const { userToken, updateUserToken, isLoadingUserToken, history, logout } = this.props;
+    const { userToken, updateUserToken, isLoadingUserToken, history } = this.props;
 
     const childProps = {
       userToken,
       updateUserToken,
+      history
     }
 
     return !isLoadingUserToken
@@ -118,7 +117,7 @@ class App extends Component {
             <Navbar.Collapse>
               <Nav pullRight>
                 {userToken
-                  ? <NavItem onClick={ logout }>Logout</NavItem>
+                  ? <NavItem onClick={ this.handleLogout }>Logout</NavItem>
                   : [<RouteNavItem key={1} onClick={this.handleNavLink} href='/signup'>Signup</RouteNavItem>,
                   <RouteNavItem key={2} onClick={this.handleNavLink} href='/login'>Login</RouteNavItem>]
                 }
@@ -138,7 +137,7 @@ App = connect(
   }),
   (dispatch) => ({
     updateUserToken: (userToken) => dispatch(updateUserToken(userToken)),
-    logout: (history) => dispatch(logoutUser(history))
+    logout: () => dispatch(logoutUser())
   })
 )(App)
 
