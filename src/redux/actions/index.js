@@ -11,19 +11,17 @@ export function requestNotes(userToken) {
     }
 }
 
-export function receiveNotesSuccess(notes, userToken) {
+export function receiveNotesSuccess(notes) {
     return {
         type: RECEIVE_NOTES_SUCCESS,
-        notes,
-        userToken,
+        notes
     }
 }
 
-export function receiveNotesFailure(error, userToken) {
+export function receiveNotesFailure(error) {
     return {
         type: RECEIVE_NOTES_FAILURE,
         error,
-        userToken,
     }
 }
 
@@ -42,10 +40,10 @@ export function fetchNotes(userToken) {
 
         return axios(config)
             .then(function (response) {
-                return dispatch(receiveNotesSuccess(response.data, userToken));
+                return dispatch(receiveNotesSuccess(response.data));
             })
             .catch(function (error) {
-                return dispatch(receiveNotesFailure(error, userToken));
+                return dispatch(receiveNotesFailure(error));
             });
     }
 }

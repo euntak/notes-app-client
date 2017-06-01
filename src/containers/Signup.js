@@ -33,6 +33,12 @@ const Wrapper = styled.div`
     }
 `;
 
+/**
+ * this.state에서 입력을 받는 변수 제외하고 나머지 action, reducer로 뺀다.
+ * async 연결이나 통신은 api쪽으로 뺄 수 있으면 전부 뺀다.
+ * props나 dispatch를 적극 활용 할 것.
+ */
+
 class Signup extends Component {
     constructor(props) {
         super(props);

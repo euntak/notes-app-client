@@ -4,12 +4,14 @@ import { NavItem } from 'react-bootstrap';
 
 
 const RouteNavItem = (props) => {
+
     return (
         <Route path={props.href} exact children={
-            ({match}) => (
-                <NavItem {...props} active={ match ? true : false }>{props.children}</NavItem>
-            )
-        }/>
+            ({ match }) =>
+                (
+                    <NavItem {...props} active={match ? true : false}>{props.children}</NavItem>
+                )
+        } />
     );
 };
 

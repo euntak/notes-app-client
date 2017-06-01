@@ -41,7 +41,10 @@ const Wrapper = styled.div`
 class Home extends Component {
 
     componentDidMount() {
-        if (this.props.userToken === null) return;
+        const { userToken, updateUserToken } = this.props;
+        if (userToken === null) return;
+
+        updateUserToken(userToken);
         this.notes();
     }
 
@@ -62,22 +65,25 @@ class Home extends Component {
     }
 
     renderNotesList(notes) {
-        return [{}].concat(notes).map((note, i) => (
-            i !== 0
-                ? (<ListGroupItem
-                    key={note.noteid}
-                    href={`/notes/${note.noteid}`}
-                    onClick={this.handleNoteClick}
-                    header={note.content.trim().split('\n')[0]}>
-                    {"Created: " + (new Date(note.createdAt)).toLocaleString()}
-                </ListGroupItem>)
-                : (<ListGroupItem
-                    key="new"
-                    href="/notes/new"
-                    onClick={this.handleNoteClick}>
-                    <h4><b>{'\uFF0B'}</b> Create a new note</h4>
-                </ListGroupItem>)
-        ));
+        
+        // if (notes !== null && notes !== undefined)
+            return [{}].concat(notes).map((note, i) => (
+                i !== 0
+                    ? (<ListGroupItem
+                        key={note.noteid}
+                        href={`/notes/${note.noteid}`}
+                        onClick={this.handleNoteClick}
+                        header={note.content.trim().split('\n')[0]}>
+                        {"Created: " + (new Date(note.createdAt)).toLocaleString()}
+                    </ListGroupItem>)
+                    : (<ListGroupItem
+                        key="new"
+                        href="/notes/new"
+                        onClick={this.handleNoteClick}>
+                        <h4><b>{'\uFF0B'}</b> Create a new note</h4>
+                    </ListGroupItem>)
+            ));
+        // else return [];
     }
 
     // default rendering 
@@ -113,7 +119,7 @@ class Home extends Component {
             <Wrapper>
                 {
                     userToken === null
-                        ? this.renderNotes()
+                        ? this.renderLander()
                         : this.renderNotes(notes)
                 }
             </Wrapper>
@@ -125,6 +131,7 @@ Home = connect(
     (state) => ({
         notes: state.notes.list,
         isLoading: state.notes.isLoading,
+        userToken: state.user.userToken || localStorage.getItem('userToken'),
     }),
     (dispatch) => ({
         fetchNotes: (userToken) => dispatch(fetchNotes(userToken))

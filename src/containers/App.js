@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
+// import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { connect } from 'react-redux';
+import UserApi from '../api/userApi';
+import { updateUserToken, logoutUser } from '../redux/actions/user';
 import AWS from 'aws-sdk';
 import Routes from '../Routes';
 import RouteNavItem from '../components/RouteNavItem';
@@ -49,64 +52,32 @@ const Wrapper = styled.div`
 `;
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  // constructor(props) {
+  //   super(props);
 
-    this.state = {
-      userToken: null,
-      isLoadingUserToken: true,
-    };
+  //   this.state = {
+  //     userToken: null,
+  //     isLoadingUserToken: true,
+  //   };
+  // }
+
+  componentWillMount() {
+    if(localStorage.getItem('userToken')) localStorage.removeItem('userToken');
   }
 
   async componentDidMount() {
-    const currentUser = this.getCurrentUser();
+    const currentUser = UserApi.getCurrentUser();
 
-    if(currentUser === null) {
-      this.setState({ isLoadingUserToken: false });
+    if (currentUser === null) {
       return;
     }
 
     try {
-      const userToken = await this.getUserToken(currentUser);
-      this.updateUserToken(userToken);
+      const userToken = await UserApi.getUserToken(currentUser);
+      updateUserToken(userToken);
     } catch (e) {
       alert(e);
     }
-
-    this.setState({ isLoadingUserToken: false });
-  }
-
-  getCurrentUser() {
-    // if you config.js using.. below code 
-    // const userPool = new CognitoUserPool({
-    //   UserPoolId: config.cognito.USER_POOL_ID,
-    //   ClientId: config.cognito.APP_CLIENT_ID
-    // });
-
-    // if you're .env using... below code
-    const userPool = new CognitoUserPool({
-      UserPoolId: process.env.REACT_APP_USER_POOL_ID,
-      ClientId: process.env.REACT_APP_APP_CLIENT_ID
-    });
-
-    return userPool.getCurrentUser();
-  }
-
-  getUserToken(currentUser) {
-    return new Promise((resolve, reject) => {
-        currentUser.getSession((err, session) => {
-          if(err) {
-            reject(err); return;
-          }
-          resolve(session.getIdToken().getJwtToken());
-        });
-    });
-  }
-
-  updateUserToken = (userToken) => {
-    this.setState({
-      userToken
-    });
   }
 
   handleNavLink = (event) => {
@@ -114,59 +85,62 @@ class App extends Component {
     this.props.history.push(event.currentTarget.getAttribute('href'));
   }
 
-/*
- * clear aws credentials cache ! 
- */
+  /*
+   * clear aws credentials cache ! 
+   */
   handleLogout = (event) => {
-    const currentUser = this.getCurrentUser();
+    event.preventDefault();
+        
+    // this.props.history.push('/login');
 
-    if(currentUser !== null) {
-      currentUser.signOut();
-    }
-    
-    if(AWS.config.credentials) {
-      AWS.config.credentials.clearCachedId();
-    }
-
-    this.updateUserToken(null);
-
-    // redirect /login page!
-    this.props.history.push('/login');
   }
 
   render() {
+    const { userToken, updateUserToken, isLoadingUserToken, history, logout } = this.props;
+
     const childProps = {
-      userToken: this.state.userToken,
-      updateUserToken: this.updateUserToken
-    };
+      userToken,
+      updateUserToken,
+    }
 
-    return ! this.state.isLoadingUserToken
-    && 
-    (
-      <Wrapper className="container">
-        <Navbar fluid collapseOnSelect>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <Link to='/'>Scratch</Link>
-            </Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar.Header>
+    return !isLoadingUserToken
+      &&
+      (
+        <Wrapper className="container">
+          <Navbar fluid collapseOnSelect>
+            <Navbar.Header>
+              <Navbar.Brand>
+                <Link to='/'>Scratch</Link>
+              </Navbar.Brand>
+              <Navbar.Toggle />
+            </Navbar.Header>
 
-          <Navbar.Collapse>
-            <Nav pullRight>
-              { this.state.userToken
-                ? <NavItem onClick={this.handleLogout}>Logout</NavItem>
-                : [ <RouteNavItem key={1} onClick={this.handleNavLink} href='/signup'>Signup</RouteNavItem> ,
-                    <RouteNavItem key={2} onClick={this.handleNavLink} href='/login'>Login</RouteNavItem> ]
-              }
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-        <Routes childProps={childProps} />
-      </Wrapper>
-    );
+            <Navbar.Collapse>
+              <Nav pullRight>
+                {userToken
+                  ? <NavItem onClick={ logout }>Logout</NavItem>
+                  : [<RouteNavItem key={1} onClick={this.handleNavLink} href='/signup'>Signup</RouteNavItem>,
+                  <RouteNavItem key={2} onClick={this.handleNavLink} href='/login'>Login</RouteNavItem>]
+                }
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
+          <Routes childProps={childProps} />
+        </Wrapper>
+      );
   }
 }
+
+App = connect(
+  (state) => ({
+    userToken: state.user.userToken,
+    isLoadingUserToken: state.user.isLoadingUserToken,
+  }),
+  (dispatch) => ({
+    updateUserToken: (userToken) => dispatch(updateUserToken(userToken)),
+    logout: (history) => dispatch(logoutUser(history))
+  })
+)(App)
 
 // withRouter --> HOC (Hight Order Component!) learn more !!! plz
 export default withRouter(App);

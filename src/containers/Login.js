@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import LoaderButton from '../components/LoaderButton';
-import {
-    CognitoUserPool,
-    AuthenticationDetails,
-    CognitoUser
-} from 'amazon-cognito-identity-js';
-
+import { connect } from 'react-redux';
+import { loginUser } from '../redux/actions/user';
 import {
     FormGroup,
     FormControl,
@@ -31,35 +27,12 @@ class Login extends Component {
         this.state = {
             username: '',
             password: '',
-            isLoading: false,
         };
-    }
-
-    login(username, password) {
-        const userPool = new CognitoUserPool({
-            UserPoolId: process.env.REACT_APP_USER_POOL_ID,
-            ClientId: process.env.REACT_APP_APP_CLIENT_ID,
-        });
-
-        const authenticationData = {
-            Username: username,
-            Password: password
-        };
-
-        const user = new CognitoUser({ Username: username, Pool: userPool });
-        const authenticationDetails = new AuthenticationDetails(authenticationData);
-
-        return new Promise((resolve, reject) => {
-            user.authenticateUser(authenticationDetails, {
-                onSuccess: (result) => resolve(result.getIdToken().getJwtToken()),
-                onFailure: (err) => reject(err),
-            })
-        });
     }
 
     validateForm() {
-        return this.state.username.length > 0
-            && this.state.password.length > 0;
+        return this.state.username.length > 0 
+        && this.state.password.length > 0;
     }
 
     handleChange = (event) => {
@@ -70,20 +43,27 @@ class Login extends Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-
-        this.setState({ isLoading: true });
-
+        const { loginUser , history, updateUserToken} = this.props;
         try {
-            const userToken = await this.login(this.state.username, this.state.password);
-            this.props.updateUserToken(userToken);
-            // this.props.history.push('/');
+            const result = await loginUser(this.state.username, this.state.password);
+            
+            if(result.type === 'LOGIN_FAILURE') {
+                alert('아이디와 비밀번호를 확인해 주세요');
+                return;
+            }
+
+            // // 결과 값에서 userToken을 빼서 localStorage에 저장 한다.
+            // localStorage.setItem('userToken', result.userToken);
+            updateUserToken(result.userToken);
+            history.push('/');
+            
         } catch (e) {
             alert(e);
-            this.setState({ isLoading: false });
         }
     }
 
     render() {
+        const { isLoading } = this.props;
         return (
             <Wrapper>
                 <form onSubmit={this.handleSubmit}>
@@ -107,7 +87,7 @@ class Login extends Component {
                         block
                         bsSize='large'
                         disabled={!this.validateForm()}
-                        isLoading={this.state.isLoading}
+                        isLoading={isLoading}
                         type='submit'
                         text='Login'
                         loadingText='Logging in...' />
@@ -116,5 +96,15 @@ class Login extends Component {
         );
     }
 }
+
+Login = connect(
+    (state) => ({
+        isLoading: state.user.isLoading,
+        userToken: state.user.userToken || localStorage.getItem('userToken')
+    }),
+    (dispatch) => ({
+        loginUser: (username, password) => dispatch(loginUser(username, password))
+    })
+)(Login);
 
 export default withRouter(Login);
