@@ -8,6 +8,12 @@ import {
 } from 'react-bootstrap';
 import LoaderButton from '../components/LoaderButton';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import noteApi from '../api/noteApi';
+import {
+    getCurrentNote
+} from '../redux/actions/note';
+
 
 const Wrapper = styled.div`
     form {
@@ -35,19 +41,22 @@ class Notes extends Component {
     }
 
     async componentDidMount() {
-        try {
-            const results = await this.getNote();
-            this.setState({
-                note: results,
-                content: results.content,
-            });
-        } catch (e) {
-            alert(e);
-        }
+        const { userToken, match } = this.props;
+        console.log(userToken);
+        console.log(match);
+        // try {
+        //     const results = await this.getNote(match.params.id, userToken);
+        //     this.setState({
+        //         note: results,
+        //         content: results.content,
+        //     });
+        // } catch (e) {
+        //     alert(e);
+        // }
     }
 
     getNote() {
-        return invokeApig({ path: `/notes/${this.props.match.params.id}` }, this.props.userToken);
+        // return 
     }
 
     validateForm() {
@@ -196,5 +205,14 @@ class Notes extends Component {
         );
     }
 }
+
+Notes = connect(
+    (state) => ({
+        userToken: state.notes.userToken
+    }),
+    (dispatch) => ({
+        getNote: (noteid, userToken) => dispatch(getCurrentNote(noteid, userToken))
+    })
+)(Notes);
 
 export default withRouter(Notes);

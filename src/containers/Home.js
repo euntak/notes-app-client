@@ -65,25 +65,22 @@ class Home extends Component {
     }
 
     renderNotesList(notes) {
-        
-        // if (notes !== null && notes !== undefined)
-            return [{}].concat(notes).map((note, i) => (
-                i !== 0
-                    ? (<ListGroupItem
-                        key={note.noteid}
-                        href={`/notes/${note.noteid}`}
-                        onClick={this.handleNoteClick}
-                        header={note.content.trim().split('\n')[0]}>
-                        {"Created: " + (new Date(note.createdAt)).toLocaleString()}
-                    </ListGroupItem>)
-                    : (<ListGroupItem
-                        key="new"
-                        href="/notes/new"
-                        onClick={this.handleNoteClick}>
-                        <h4><b>{'\uFF0B'}</b> Create a new note</h4>
-                    </ListGroupItem>)
-            ));
-        // else return [];
+        return [{}].concat(notes).map((note, i) => (
+            i !== 0
+                ? (<ListGroupItem
+                    key={note.noteid}
+                    href={`/notes/${note.noteid}`}
+                    onClick={this.handleNoteClick}
+                    header={note.content.trim().split('\n')[0]}>
+                    {"Created: " + (new Date(note.createdAt)).toLocaleString()}
+                </ListGroupItem>)
+                : (<ListGroupItem
+                    key="new"
+                    href="/notes/new"
+                    onClick={this.handleNoteClick}>
+                    <h4><b>{'\uFF0B'}</b> Create a new note</h4>
+                </ListGroupItem>)
+        ));
     }
 
     // default rendering 

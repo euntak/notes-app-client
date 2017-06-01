@@ -2,6 +2,7 @@ import {
     REQUEST_NOTES,
     RECEIVE_NOTES_SUCCESS,
     RECEIVE_NOTES_FAILURE,
+    GET_NOTE
 } from '../actions';
 
 const initialState = {
@@ -30,6 +31,13 @@ export default function notes(state = initialState, action) {
                 isLoading: false,
                 list: null,
             }
+        case GET_NOTE:
+            return {
+                ...state,
+                isLoading: false,
+                userToken: action.userToken
+            }
+
         default:
             return state
     }

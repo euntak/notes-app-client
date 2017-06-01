@@ -3,7 +3,6 @@ import {
     AuthenticationDetails,
     CognitoUser
 } from 'amazon-cognito-identity-js';
-import AWS from 'aws-sdk';
 
 class AuthenticateUser {
     static login(username, password) {
@@ -46,24 +45,6 @@ class AuthenticateUser {
                 resolve(session.getIdToken().getJwtToken());
             });
         });
-    }
-
-    static logout = (event) => {
-        const currentUser = AuthenticateUser.getCurrentUser();
-
-        if (currentUser !== null) {
-            currentUser.signOut();
-        }
-
-        if (AWS.config.credentials) {
-            AWS.config.credentials.clearCachedId();
-        }
-
-        if(localStorage.getItem('userToken')) localStorage.removeItem('userToken');
-
-        // redirect /login page!
-        // history.push('/login');
-        return '/login';
     }
 }
 
