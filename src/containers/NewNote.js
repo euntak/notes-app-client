@@ -6,6 +6,8 @@ import {
     ControlLabel,
 } from 'react-bootstrap';
 
+import { connect } from 'react-redux';
+import { createNote } from '../redux/actions/note';
 import { invokeApig, s3Upload } from '../libs/awsLib';
 import LoaderButton from '../components/LoaderButton';
 import styled from 'styled-components';
@@ -33,16 +35,7 @@ class NewNote extends Component {
             content: '',
         };
     }
-
-    createNote(note) {
-        return invokeApig({
-            path: '/notes',
-            method: 'POST',
-            body: note,
-
-        }, this.props.userToken);
-    }
-
+    
     validateForm() {
         return this.state.content.length > 0;
     }
@@ -58,6 +51,7 @@ class NewNote extends Component {
     }
 
     handleSubmit = async (event) => {
+        const { userToken, createNote, history } = this.props;
         event.preventDefault();
 
         if(this.file && this.file.size > process.env.MAX_ATTACHEMENT_SIZE) {
@@ -71,14 +65,15 @@ class NewNote extends Component {
             
             // creating note before upload s3 file!
             const uploadedFilename = (this.file)
-            ? (await s3Upload(this.file, this.props.userToken)).Location
+            ? (await s3Upload(this.file, userToken)).Location
             : null;
 
-            await this.createNote({
+            await createNote(userToken, {
                 content: this.state.content,
                 attachment: uploadedFilename,
             });
-            this.props.history.push('/');
+            
+            history.push('/');
         } catch (e) {
             alert(e);
             this.setState({ isLoading: false });
@@ -117,5 +112,14 @@ class NewNote extends Component {
         );
     }
 }
+
+NewNote = connect(
+    (state) => ({
+       userToken: state.note.userToken || localStorage.getItem('userToken'), 
+    }),
+    (dispatch) => ({
+        createNote: (userToken, content) => dispatch(createNote(userToken, content))
+    })
+)(NewNote)
 
 export default withRouter(NewNote);

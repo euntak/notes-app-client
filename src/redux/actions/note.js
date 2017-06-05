@@ -10,18 +10,17 @@ export const NEW_NOTE = 'NEW_NOTE';
 export const DELETE_NOTE = 'DELETE_NOTE';
 export const SAVE_NOTE = 'SAVE_NOTE';
 
-export function getNote(noteid, userToken) {
+export function getNote(note) {
     return {
         type: GET_NOTE,
-        noteid,
-        userToken,
+        note,
     }
 }
 
-export function newNote(content) {
+export function newNote(note) {
     return {
         type: NEW_NOTE,
-        content
+        note,
     }
 }
 
@@ -84,11 +83,17 @@ export function fetchNotes(userToken) {
     }
 }
 
-export function getCurrentNote(noteid, userToken) {
+export function getCurrentNote(note) {
     return (dispatch) => {
-        console.log(noteid, userToken);
-        const result = noteApi.getNote(noteid, userToken);
-        console.log(result);
-        dispatch(getNote(noteid, userToken))
+        // console.log(noteid, userToken);
+        // const result = noteApi.getNote(noteid, userToken);
+        dispatch(getNote(note))
+    }
+}
+
+export function createNote(userToken, note) {
+    return (dispatch) => {
+        noteApi.createNote(userToken, note);
+        dispatch(newNote(note))
     }
 }

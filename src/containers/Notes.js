@@ -41,22 +41,20 @@ class Notes extends Component {
     }
 
     async componentDidMount() {
-        const { userToken, match } = this.props;
-        console.log(userToken);
-        console.log(match);
-        // try {
-        //     const results = await this.getNote(match.params.id, userToken);
-        //     this.setState({
-        //         note: results,
-        //         content: results.content,
-        //     });
-        // } catch (e) {
-        //     alert(e);
-        // }
-    }
+        const { userToken, match, getNote } = this.props;
+        
+        try {
+            const result = noteApi.getNote(match.params.id, userToken);
+            result.then(res => {
+                getNote(res); // dispatching Action
+                this.setState({
+                    note: res,
+                    content: res.content,
+                });
+            });
+        } catch (e) {
 
-    getNote() {
-        // return 
+        }
     }
 
     validateForm() {
@@ -126,6 +124,7 @@ class Notes extends Component {
     }
 
     handleSubmit = async (event) => {
+        const { userToken, history } = this.props;
         let uploadedFilename;
 
         event.preventDefault();
@@ -140,7 +139,7 @@ class Notes extends Component {
         try {
 
             if (this.file) {
-                uploadedFilename = (await s3Upload(this.file, this.props.userToken)).Location;
+                uploadedFilename = (await s3Upload(this.file, userToken)).Location;
             }
 
             await this.saveNote({
@@ -148,7 +147,8 @@ class Notes extends Component {
                 content: this.state.content,
                 attachment: uploadedFilename || this.state.note.attachment,
             });
-            this.props.history.push('/');
+
+            history.push('/');
         }
         catch (e) {
             alert(e);
@@ -157,6 +157,7 @@ class Notes extends Component {
     }
 
     render() {
+        const { isLoading } = this.props;
         return (
             <Wrapper>
                 {this.state.note &&
@@ -208,10 +209,13 @@ class Notes extends Component {
 
 Notes = connect(
     (state) => ({
-        userToken: state.notes.userToken
+        userToken: state.notes.userToken || localStorage.getItem('userToken'),
+        note: state.note.note,
+        isLoading: state.note.isLoading,
+        isDeleting: state.note.isDeleting,
     }),
     (dispatch) => ({
-        getNote: (noteid, userToken) => dispatch(getCurrentNote(noteid, userToken))
+        getNote: (note) => dispatch(getCurrentNote(note))
     })
 )(Notes);
 

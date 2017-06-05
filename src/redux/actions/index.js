@@ -40,6 +40,7 @@ export function fetchNotes(userToken) {
 
         return axios(config)
             .then(function (response) {
+                console.log(response.data);
                 return dispatch(receiveNotesSuccess(response.data));
             })
             .catch(function (error) {

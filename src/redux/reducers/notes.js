@@ -35,7 +35,8 @@ export default function notes(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                userToken: action.userToken
+                userToken: action.userToken,
+                note: action.note,
             }
 
         default:

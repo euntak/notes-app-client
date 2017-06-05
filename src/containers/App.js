@@ -132,7 +132,7 @@ class App extends Component {
 
 App = connect(
   (state) => ({
-    userToken: state.user.userToken,
+    userToken: state.user.userToken || localStorage.getItem('userToken'),
     isLoadingUserToken: state.user.isLoadingUserToken,
   }),
   (dispatch) => ({
